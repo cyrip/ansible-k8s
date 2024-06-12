@@ -1,5 +1,9 @@
 ---
 # tasks file for kubernetes-master
+- name: Output the inventory_hostname
+  debug:
+    msg: "The initial master is: {{ control_plane_endpoint }}"
+
 - name: Install common packages
   package:
     name:
@@ -8,3 +12,50 @@
       - kubeadm
     state: present
 
+- name: Generate kubeadm config file from template
+  template:
+    src: kubelet.tpl.yml.j2
+    dest: /root/kubelet.yml
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Run a shell command
+  shell: "kubeadm init --config /root/kubelet.yml"
+  register: kubeadm_output
+  ignore_errors: yes
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Display the kubeadm output
+  debug:
+    msg: "The command output is: {{ kubeadm_output.stdout }}"
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Ensure .kube directory exists
+  file:
+    path: /root/.kube/
+    state: directory
+    mode: '0600'
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Copy admin.conf
+  command: cp /etc/kubernetes/admin.conf /root/.kube/config
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Run a shell command
+  shell: "kubectl get nodes"
+  register: master_nodes
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Display the output
+  debug:
+    msg: "The command output is: {{ master_nodes.stdout }}"
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Run a shell command
+  shell: "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml"
+  register: calico_result
+  when: inventory_hostname == "{{ control_plane_endpoint }}"
+
+- name: Display the output
+  debug:
+    msg: "The command output is: {{ calico_result.stdout }}"
+  when: inventory_hostname == "{{ control_plane_endpoint }}"

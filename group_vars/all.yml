@@ -1,0 +1,8 @@
+control_plane_endpoint: kcl2-m1
+join_masters:
+  - kcl2-m2
+  - kcl2-m3
+join_workers:
+  - kcl2-w1
+  - kcl2-w2
+  - kcl2-w3
