@@ -1,0 +1,79 @@
+---
+- name: Turn off all swap devices and files
+  command: swapoff -a
+
+- name: Remove swap entry from /etc/fstab
+  mount:
+    name: none
+    path: swap
+    fstype: swap
+    state: absent
+    
+- name: Ensure kernel module is listed in /etc/modules
+  lineinfile:
+    path: /etc/modules
+    line: "{{ item }}"
+    state: present
+  loop: "{{ kernel_modules }}"
+- name: Load kernel module immediately
+  command: modprobe {{ item }}
+  loop: "{{ kernel_modules }}"
+  ignore_errors: yes
+        
+- name: Copy the file from the control machine to the remote host
+  copy:
+    src:  etc/sysctl.d/99-kubernetes-k8s.conf
+    dest: /etc/sysctl.d/99-kubernetes-k8s.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Load modules
+  shell: sysctl --system
+
+- name: Install required dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - containerd
+    state: present
+    update_cache: yes
+
+- name: Save default containerd config
+  shell: containerd config default| sed 's/SystemdCgroup = false/SystemdCgroup = true/g' | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+
+- name: Ensure the service is enabled and started
+  systemd:
+    name: containerd
+    enabled: yes
+    state: started
+       
+- name: Get Kubernetes package key
+  shell: curl -fsSL {{ k8s_url_apt_key }} | gpg --dearmor -o {{ k8s_gpgpath }}
+  args:
+    creates: "{{ k8s_gpgpath }}"
+
+- name: Install Kubernetes repository
+  apt_repository:
+    filename: kubernetes
+    repo: "deb [signed-by={{ k8s_gpgpath }}] {{ k8s_repository }} /"
+    
+- name: Ensure host entries are present in /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item.ip }}   {{ item.fqdn }}    {{ item.shortname }}"
+    state: present
+    create: yes
+  loop: "{{ host_entries }}"
+
+- name: Output the inventory_hostname
+  debug:
+    msg: "The inventory_hostname is {{ inventory_hostname }} {{ ansible_default_ipv4.address }}"     
+
+- name: Set hostname if IP address matches
+  hostname:
+    name: "{{ hostname_map[inventory_hostname] }}"
+  when: inventory_hostname in hostname_map
+

@@ -1,0 +1,9 @@
+---
+# tasks file for kubernetes-worker
+- name: Install common packages
+  package:
+    name:
+      - kubernetes-cni
+      - kubelet
+    state: present
+

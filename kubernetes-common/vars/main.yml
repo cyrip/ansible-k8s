@@ -1,0 +1,20 @@
+---
+# vars file for kubernetes-common
+k8s_url_apt_key: "https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key"
+k8s_gpgpath: /usr/share/keyrings/kubernetes-apt-keyring.gpg
+k8s_repository: "https://pkgs.k8s.io/core:/stable:/v1.28/deb/"
+kernel_modules:
+  - overlay
+  - br_netfilter
+host_entries:
+  - { ip: "192.168.0.121", fqdn: "kcl2-m1.codeware.local", shortname: "kcl2-m1" }
+  - { ip: "192.168.0.122", fqdn: "kcl2-m2.codeware.local", shortname: "kcl2-m2" }
+  - { ip: "192.168.0.123", fqdn: "kcl2-m3.codeware.local", shortname: "kcl2-m3" }
+  - { ip: "192.168.0.124", fqdn: "kcl2-w1.codeware.local", shortname: "kcl2-w1" }
+  - { ip: "192.168.0.125", fqdn: "kcl2-w2.codeware.local", shortname: "kcl2-w2" }
+hostname_map:
+  "kcl2-m1": "kcl2-m1.codeware.local"
+  "kcl2-m2": "kcl2-m2.codeware.local"
+  "kcl2-m3": "kcl2-m3.codeware.local"
+  "kcl2-w1": "kcl2-w1.codeware.local"
+  "kcl2-w2": "kcl2-w2.codeware.local"

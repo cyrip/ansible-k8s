@@ -1,0 +1,10 @@
+---
+# tasks file for kubernetes-master
+- name: Install common packages
+  package:
+    name:
+      - kubernetes-cni
+      - kubelet
+      - kubeadm
+    state: present
+
