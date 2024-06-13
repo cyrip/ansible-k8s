@@ -3,6 +3,7 @@
   command: swapoff -a
 
 - name: Remove swap entry from /etc/fstab
+  debugger: "{{ do_debug | default('never') }}"
   mount:
     name: none
     path: swap
