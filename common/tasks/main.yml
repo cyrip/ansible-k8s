@@ -1,9 +1,24 @@
 ---
 # tasks file for common
+- name: Include cloud init tasks
+  import_tasks: system.yml
+
 - name: Update the APT package index
   apt:
     update_cache: yes 
-      
+
+- name: Include cloud init tasks
+  import_tasks: cloud-init.yml
+
+- name: Setup motd
+  become: true
+  copy:
+    content: "The system is managed by ansible"
+    dest: "/etc/motd"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
 - name: Install common packages
   package:
     name:
