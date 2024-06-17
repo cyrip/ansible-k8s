@@ -1,14 +1,10 @@
 - name: Output the inventory_hostname
-  debug:
+  ansible.builtin.debug:
     msg: "Domain name {{ ansible_facts.domain }} {{ domain_name }}"
 
 - name: Set timezone to Europe/Budapest
   timezone:
     name: Europe/Budapest
-
-- name: Set hostname
-  hostname:
-    name: "{{ hostname }}"
 
 - name: Set domain name
   command: "domainname {{ domain_name }}"

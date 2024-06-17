@@ -2,7 +2,7 @@
 - name: Ensure database servers are configured
   hosts: kcl2-masters
   roles:
-    - common    
+    - common
     - kubernetes-common
     - kubernetes-master
 - name: Ensure database servers are configured
@@ -11,4 +11,3 @@
     - common
     - kubernetes-common
     - kubernetes-worker
-      

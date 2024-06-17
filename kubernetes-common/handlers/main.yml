@@ -1,2 +1,6 @@
 ---
 # handlers file for kubernetes-common
+- name: Restart containerd
+  service:
+    name: containerd
+    state: restarted

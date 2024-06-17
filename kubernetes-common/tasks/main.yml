@@ -9,18 +9,21 @@
     path: swap
     fstype: swap
     state: absent
-    
+
 - name: Ensure kernel module is listed in /etc/modules
   lineinfile:
     path: /etc/modules
     line: "{{ item }}"
     state: present
   loop: "{{ kernel_modules }}"
-- name: Load kernel module immediately
-  command: modprobe {{ item }}
+
+- name: Load kernel modules declaratively
+  ansible.builtin.modprobe:
+    name: "{{ item }}"
+    state: present
   loop: "{{ kernel_modules }}"
   ignore_errors: yes
-        
+
 - name: Copy the file from the control machine to the remote host
   copy:
     src:  etc/sysctl.d/99-kubernetes-k8s.conf
@@ -29,7 +32,7 @@
     group: root
     mode: '0644'
 
-- name: Load modules
+- name: Set sysctl confs
   shell: sysctl --system
 
 - name: Install required dependencies
@@ -42,15 +45,30 @@
     state: present
     update_cache: yes
 
-- name: Save default containerd config
-  shell: containerd config default| sed 's/SystemdCgroup = false/SystemdCgroup = true/g' | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+- name: Save default containerd config to a temporary file
+  shell: containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/g' > /tmp/config.toml
+  register: sed_output
+  changed_when: false
+  check_mode: no
+
+- name: Check if the new configuration is different from the existing one
+  command: diff /tmp/config.toml /etc/containerd/config.toml
+  register: diff_result
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
+
+- name: Replace the old configuration with the new one if there are differences
+  command: mv /tmp/config.toml /etc/containerd/config.toml
+  when: diff_result.rc != 0
+  notify: Restart containerd
 
 - name: Ensure the service is enabled and started
   systemd:
     name: containerd
     enabled: yes
     state: started
-       
+
 - name: Get Kubernetes package key
   shell: curl -fsSL {{ k8s_url_apt_key }} | gpg --dearmor -o {{ k8s_gpgpath }}
   args:

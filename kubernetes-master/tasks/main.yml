@@ -25,7 +25,7 @@
   when: inventory_hostname == "{{ control_plane_endpoint }}"
 
 - name: Display the kubeadm output
-  debug:
+  ansible.builtin.debug:
     msg: "The command output is: {{ kubeadm_output.stdout }}"
   when: inventory_hostname == "{{ control_plane_endpoint }}"
 
