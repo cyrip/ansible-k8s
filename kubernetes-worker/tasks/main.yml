@@ -1,10 +1,9 @@
 ---
 # tasks file for kubernetes-worker
 - name: Install common packages
-  package:
+  ansible.builtin.package:
     name:
       - kubernetes-cni
       - kubelet
       - kubeadm
     state: present
-

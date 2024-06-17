@@ -1,11 +1,11 @@
 ---
 # tasks file for kubernetes-master
 - name: Output the inventory_hostname
-  debug:
+  ansible.builtin.debug:
     msg: "The initial master is: {{ control_plane_endpoint }}"
 
 - name: Install common packages
-  package:
+  ansible.builtin.package:
     name:
       - kubernetes-cni
       - kubelet
@@ -13,49 +13,50 @@
     state: present
 
 - name: Generate kubeadm config file from template
-  template:
+  ansible.builtin.template:
     src: kubelet.tpl.yml.j2
     dest: /root/kubelet.yml
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+    mode: '0600'
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Run a shell command
-  shell: "kubeadm init --config /root/kubelet.yml"
+  ansible.builtin.shell: "kubeadm init --config /root/kubelet.yml"
   register: kubeadm_output
-  ignore_errors: yes
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  ignore_errors: true
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Display the kubeadm output
   ansible.builtin.debug:
     msg: "The command output is: {{ kubeadm_output.stdout }}"
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Ensure .kube directory exists
-  file:
+  ansible.builtin.file:
     path: /root/.kube/
     state: directory
     mode: '0600'
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Copy admin.conf
-  command: cp /etc/kubernetes/admin.conf /root/.kube/config
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  ansible.builtin.command: cp /etc/kubernetes/admin.conf /root/.kube/config
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Run a shell command
-  shell: "kubectl get nodes"
+  ansible.builtin.shell: "kubectl get nodes"
   register: master_nodes
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Display the output
-  debug:
+  ansible.builtin.debug:
     msg: "The command output is: {{ master_nodes.stdout }}"
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Run a shell command
-  shell: "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml"
+  ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml"
   register: calico_result
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint
 
 - name: Display the output
-  debug:
+  ansible.builtin.debug:
     msg: "The command output is: {{ calico_result.stdout }}"
-  when: inventory_hostname == "{{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint

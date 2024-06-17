@@ -3,16 +3,16 @@
     msg: "Domain name {{ ansible_facts.domain }} {{ domain_name }}"
 
 - name: Set timezone to Europe/Budapest
-  timezone:
+  community.general.timezone:
     name: Europe/Budapest
 
 - name: Set domain name
-  command: "domainname {{ domain_name }}"
+  ansible.builtin.command: "domainname {{ domain_name }}"
   when: ansible_facts.domain != domain_name
 
-- name: force color
+- name: Force color
   become: true
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/bash.bashrc
     regexp: "^force_color_prompt=yes$"
     line: "force_color_prompt=yes"
