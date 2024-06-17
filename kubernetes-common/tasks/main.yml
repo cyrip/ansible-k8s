@@ -58,10 +58,21 @@
   changed_when: false
   check_mode: false
 
-- name: Replace the old configuration with the new one if there are differences
+- name: Containerd config diff
+  ansible.builtin.debug:
+    msg: "Containerd config diff {{ diff_result.rc }}"
+
+- name: Replace the old configuration with the new one if there are differences (it is run after the role)
   ansible.builtin.command: mv /tmp/config.toml /etc/containerd/config.toml
   when: diff_result.rc != 0
-  notify: Restart containerd
+  notify:
+    - 'Restart containerd'
+
+- name: Restart containerd
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
+  when: diff_result.rc != 0
 
 - name: Ensure the service is enabled and started
   ansible.builtin.systemd:
