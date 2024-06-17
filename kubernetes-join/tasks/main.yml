@@ -1,0 +1,4 @@
+---
+# tasks file for kubernetes-join
+- name: Include join command
+  ansible.builtin.import_tasks: get-join-command.yml

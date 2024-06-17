@@ -1,0 +1,102 @@
+---
+# tasks file for kubernetes-join
+- name: Get join command
+  ansible.builtin.shell: "kubeadm token create --print-join-command"
+  register: kubeadm_join_command_output
+  when: inventory_hostname == control_plane_endpoint
+
+- name: Set join command as a fact
+  ansible.builtin.set_fact:
+    join_command: "{{ kubeadm_join_command_output.stdout }}"
+  when: inventory_hostname == control_plane_endpoint
+
+- name: Print join command (debugging purpose)
+  ansible.builtin.debug:
+    msg: "{{ join_command }} {{ inventory_hostname }} {{ control_plane_endpoint }}"
+  when: inventory_hostname == control_plane_endpoint
+
+- name: Print some info (debugging purpose)
+  ansible.builtin.debug:
+    msg: "{{ inventory_hostname }} {{ control_plane_endpoint }}"
+
+- name: Check if the node is already part of the cluster
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_conf
+  when: inventory_hostname != control_plane_endpoint
+
+- name: Run join command on worker nodes
+  ansible.builtin.shell: "{{ hostvars[control_plane_endpoint].join_command }}"
+  ignore_errors: true
+  when:
+    - inventory_hostname != control_plane_endpoint
+    - "'kcl2-workers' in group_names"
+    - not kubelet_conf.stat.exists
+
+- name: Define the list of PKI files to be copied
+  set_fact:
+    pki_files:
+      - { src: /etc/kubernetes/pki/ca.crt, dest: /etc/kubernetes/pki/ca.crt }
+      - { src: /etc/kubernetes/pki/ca.key, dest: /etc/kubernetes/pki/ca.key }
+      - { src: /etc/kubernetes/pki/sa.pub, dest: /etc/kubernetes/pki/sa.pub }
+      - { src: /etc/kubernetes/pki/sa.key, dest: /etc/kubernetes/pki/sa.key }
+      - { src: /etc/kubernetes/pki/front-proxy-ca.crt, dest: /etc/kubernetes/pki/front-proxy-ca.crt }
+      - { src: /etc/kubernetes/pki/front-proxy-ca.key, dest: /etc/kubernetes/pki/front-proxy-ca.key }
+      - { src: /etc/kubernetes/pki/etcd/ca.crt, dest: /etc/kubernetes/pki/etcd/ca.crt }
+      - { src: /etc/kubernetes/pki/etcd/ca.key, dest: /etc/kubernetes/pki/etcd/ca.key }
+      - { src: /etc/kubernetes/admin.conf, dest: /etc/kubernetes/admin.conf }
+      - { src: /etc/kubernetes/controller-manager.conf, dest: /etc/kubernetes/controller-manager.conf }
+      - { src: /etc/kubernetes/scheduler.conf, dest: /etc/kubernetes/scheduler.conf }
+  when: inventory_hostname == control_plane_endpoint
+  run_once: true
+
+- name: Check if PKI files exist on the control plane
+  stat:
+    path: "{{ item.src }}"
+  register: pki_file_info
+  when: inventory_hostname == control_plane_endpoint
+  with_items: "{{ pki_files }}"
+  run_once: true
+
+- name: Slurp PKI files from control plane
+  slurp:
+    src: "{{ item.src }}"
+  register: slurped_files
+  when: inventory_hostname == control_plane_endpoint
+  with_items: "{{ pki_files }}"
+  run_once: true
+
+- name: Set PKI file contents as facts
+  set_fact:
+    pki_file_contents: "{{ pki_file_contents | default({}) | combine({item.item.dest: item.content | b64decode}) }}"
+  when: inventory_hostname == control_plane_endpoint
+  with_items: "{{ slurped_files.results }}"
+  run_once: true
+
+- name: Create necessary directories on new control plane nodes
+  file:
+    path: "{{ item.dest | dirname }}"
+    state: directory
+    mode: '0755'
+  when:
+    - inventory_hostname != control_plane_endpoint
+    - "'kcl2-masters' in group_names"
+  with_items: "{{ hostvars[groups['kcl2-masters'][0]].pki_files }}"
+
+- name: Write PKI files to new control plane nodes
+  copy:
+    content: "{{ hostvars[groups['kcl2-masters'][0]].pki_file_contents[item.dest] }}"
+    dest: "{{ item.dest }}"
+    mode: '0600'
+  when:
+    - inventory_hostname != control_plane_endpoint
+    - "'kcl2-masters' in group_names"
+  with_items: "{{ hostvars[groups['kcl2-masters'][0]].pki_files }}"
+
+- name: Run join command on master nodes
+  ansible.builtin.shell: "{{ hostvars[control_plane_endpoint].join_command }} --control-plane"
+  ignore_errors: yes
+  when:
+    - inventory_hostname != control_plane_endpoint
+    - "'kcl2-masters' in group_names"
+    - not kubelet_conf.stat.exists      

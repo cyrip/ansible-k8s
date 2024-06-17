@@ -1,0 +1,7 @@
+---
+- name: Ensure all nodes are joined
+  hosts:
+    - kcl2-masters
+    - kcl2-workers
+  roles:
+    - kubernetes-join

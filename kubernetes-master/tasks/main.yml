@@ -41,7 +41,7 @@
   ansible.builtin.command: cp /etc/kubernetes/admin.conf /root/.kube/config
   when: inventory_hostname == control_plane_endpoint
 
-- name: Run a shell command
+- name: Run kubectl get nodes to test
   ansible.builtin.shell: "kubectl get nodes"
   register: master_nodes
   when: inventory_hostname == control_plane_endpoint
@@ -51,7 +51,7 @@
     msg: "The command output is: {{ master_nodes.stdout }}"
   when: inventory_hostname == control_plane_endpoint
 
-- name: Run a shell command
+- name: Install calico on the cluster
   ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml"
   register: calico_result
   when: inventory_hostname == control_plane_endpoint

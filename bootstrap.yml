@@ -1,11 +1,11 @@
 ---
-- name: Ensure database servers are configured
+- name: Ensure kubernetes master nodes are configured
   hosts: kcl2-masters
   roles:
     - common
     - kubernetes-common
     - kubernetes-master
-- name: Ensure database servers are configured
+- name: Ensure kubernetes worker nodes are configured
   hosts: kcl2-workers
   roles:
     - common
