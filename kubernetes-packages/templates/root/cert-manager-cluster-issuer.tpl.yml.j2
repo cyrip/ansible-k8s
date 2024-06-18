@@ -5,9 +5,9 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: {{ cert_manager.email_address }}
+    email: {{ cert_manager.vars.email_address }}
     privateKeySecretRef:
-      name: {{ cert_manager.sercret_ref }}
+      name: {{ cert_manager.vars.sercret_ref }}
     solvers:
     - http01:
         ingress:

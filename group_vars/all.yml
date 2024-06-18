@@ -9,6 +9,13 @@ join_workers:
   - kcl2-w2
   - kcl2-w3
 
+longhorn:
+  enabled: true
+  namespace: longhorn
+
 cert_manager:
-  sercret_ref: "letsencrypt-prod"
-  email_address: "czyrip@gmail.com"
+  enabled: true
+  namespace: cert-manager
+  vars:
+    sercret_ref: "letsencrypt-prod"
+    email_address: "czyrip@gmail.com"
