@@ -1,0 +1,6 @@
+- name: Install python kubernetes package
+  ansible.builtin.package:
+    name:
+      - python3-kubernetes
+    state: present
+  when: inventory_hostname == control_plane_endpoint
