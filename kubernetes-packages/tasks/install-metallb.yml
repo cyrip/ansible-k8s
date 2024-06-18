@@ -13,6 +13,12 @@
     dest: /root/metallb-pools.yml
     mode: '0600'
 
+- name: Generate metallb values config from template
+  ansible.builtin.template:
+    src: root/metallb-advertisements.tpl.yml.j2
+    dest: /root/metallb-advertisements.yml
+    mode: '0600'
+
 - name: Install metallb
   ansible.builtin.shell: "helm upgrade --install metallb metallb/metallb --set controller.webhookMode=enabled --namespace=metallb-system"
 
@@ -55,3 +61,8 @@
   kubernetes.core.k8s:
     state: present
     src: /root/metallb-pools.yml
+
+- name: Apply metallb advertisement
+  kubernetes.core.k8s:
+    state: present
+    src: /root/metallb-advertisements.yml
