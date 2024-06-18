@@ -10,3 +10,6 @@
 
 - name: Install Longhorn
   ansible.builtin.import_tasks: install-longhorn.yml
+
+- name: Install Cert-manager
+  ansible.builtin.import_tasks: install-cert-manager.yml

@@ -1,0 +1,22 @@
+---
+- name: Create CertManager namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: cert-manager
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Install CertManager
+  ansible.builtin.shell: "helm upgrade --install cert-manager jetstack/cert-manager --version=1.15 --set installCRDs=true --namespace=cert-manager"
+    
+- name: Generate CertManager ingress from template
+  ansible.builtin.template:
+    src: root/cert-manager-cluster-issuer.tpl.yml.j2
+    dest: /root/cert-manager-cluster-issuer.yml
+    mode: '0600'
+
+- name: Apply CertManager ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/cert-manager-cluster-issuer.yml
