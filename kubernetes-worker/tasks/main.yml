@@ -6,4 +6,5 @@
       - kubernetes-cni
       - kubelet
       - kubeadm
+      - open-iscsi
     state: present

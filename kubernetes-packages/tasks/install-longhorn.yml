@@ -1,0 +1,23 @@
+---
+- name: Create Longhorn namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: longhorn-system
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Generate Longhorn ingress from template
+  ansible.builtin.template:
+    src: root/longhorn-ingress.tpl.yml.j2
+    dest: /root/longhorn-ingress.yml
+    mode: '0600'
+
+- name: Install Longhorn
+  ansible.builtin.shell: "helm upgrade --install longhorn longhorn/longhorn --namespace=longhorn-system"
+
+- name: Apply Longhorn ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/longhorn-ingress.yml
+    
