@@ -9,9 +9,49 @@
 
 - name: Generate metallb values config from template
   ansible.builtin.template:
-    src: root/metallb-values.tpl.yml.j2
-    dest: /root/metallb-values.yml
+    src: root/metallb-pools.tpl.yml.j2
+    dest: /root/metallb-pools.yml
     mode: '0600'
 
 - name: Install metallb
-  ansible.builtin.shell: "helm upgrade --install metallb metallb/metallb --values=/root/metallb-values.yml --namespace=metallb-system"
+  ansible.builtin.shell: "helm upgrade --install metallb metallb/metallb --set controller.webhookMode=enabled --namespace=metallb-system"
+
+- name: Get controller pod information
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: metallb-system
+    label_selectors:
+      - app.kubernetes.io/component=controller
+  register: pod_info
+
+- name: Wait for controller pod to be ready
+  wait_for:
+    timeout: 300
+    delay: 10
+    host: "{{ item.status.podIP }}"
+    port: 9443
+    state: started
+  with_items: "{{ pod_info.resources }}"
+  when: pod_info | length > 0
+
+- name: Wait for webhook service to have endpoints
+  k8s_info:
+    api_version: v1
+    kind: Service
+    namespace: metallb-system
+    name: metallb-webhook-service
+  register: service_info
+
+- name: Wait for webhook service endpoints
+  wait_for:
+    host: "{{ service_info.0.spec.clusterIP }}"
+    port: 443
+    delay: 10
+    timeout: 300
+  when: service_info.0.spec.clusterIP is defined
+
+- name: Apply metallb pools
+  kubernetes.core.k8s:
+    state: present
+    src: /root/metallb-pools.yml
