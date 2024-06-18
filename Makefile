@@ -3,6 +3,7 @@
 # Variables
 BOOTSTRAP = bootstrap.yml
 JOIN = join-nodes.yml 
+INSTALL_PACKAGES = install-packages.yml
 
 # Ansible targets
 .PHONY: all lint bootstrap join
@@ -21,6 +22,9 @@ join:
 
 join-simple:
 	ansible-playbook $(JOIN) --inventory inventory-simple.yml --become --become-method=sudo
+
+install-pkgs:
+	ansible-playbook $(INSTALL-PACKAGES) --inventory inventory-mgmt.yml --become --become-method=sudo
 
 # Target to lint the Ansible playbook
 lint:

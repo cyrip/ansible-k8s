@@ -1,0 +1,6 @@
+---
+- name: Install needed infrastructure
+  hosts:
+    - kcl2-mgmts
+  roles:
+    - kubernetes-packages

@@ -1,0 +1,17 @@
+---
+- name: Create nginx-ingres namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: metallb-system
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Generate metallb values config from template
+  ansible.builtin.template:
+    src: root/metallb-values.tpl.yml.j2
+    dest: /root/metallb-values.yml
+    mode: '0600'
+
+- name: Install metallb
+  ansible.builtin.shell: "helm upgrade --install metallb metallb/metallb --values=/root/metallb-values.yml --namespace=metallb-system"
