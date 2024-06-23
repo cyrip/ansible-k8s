@@ -1,0 +1,6 @@
+---
+- name: Ensure all nodes are joined
+  hosts:
+    - kcl2-mgmts
+  roles:
+    - deploy-testapp

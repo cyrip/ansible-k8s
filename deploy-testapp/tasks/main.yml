@@ -1,0 +1,5 @@
+---
+# tasks file for deploy-testapp
+- name: Include test-app
+  ansible.builtin.import_tasks: deploy-test-app.yml
+

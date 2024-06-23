@@ -1,0 +1,40 @@
+- name: Create Longhorn namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: test-app
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Generate test-app ingress from template
+  ansible.builtin.template:
+    src: root/test-app-ingress.tpl.yml.j2
+    dest: /root/test-app-ingress.yml
+    mode: '0600'
+
+- name: Apply test-app ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/test-app-ingress.yml
+
+- name: Generate test-app ingress from template
+  ansible.builtin.template:
+    src: root/test-app-service.tpl.yml.j2
+    dest: /root/test-app-service.yml
+    mode: '0600'
+
+- name: Apply test-app ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/test-app-service.yml
+
+- name: Generate test-app ingress from template
+  ansible.builtin.template:
+    src: root/test-app-deployment.tpl.yml.j2
+    dest: /root/test-app-deployment.yml
+    mode: '0600'
+
+- name: Apply test-app ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/test-app-deployment.yml
