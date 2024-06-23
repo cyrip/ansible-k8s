@@ -18,3 +18,7 @@
 - name: Install ArgoCD
   ansible.builtin.import_tasks: install-argocd.yml
   when: argocd.enabled | bool
+
+- name: Install Metrics Server
+  ansible.builtin.import_tasks: install-metrics.yml
+  when: metrics.enabled | bool

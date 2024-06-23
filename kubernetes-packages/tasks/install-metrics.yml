@@ -1,0 +1,18 @@
+---
+- name: Create metrics namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ metrics.namespace }}"
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Generate Argocd ingress from template
+  ansible.builtin.template:
+    src: root/metrics-values.tpl.yml.j2
+    dest: /root/metrics-values.yml
+    mode: '0600'
+
+- name: Install Metrics server
+  ansible.builtin.shell: "helm upgrade --install metrics-server bitnami/metrics-server --namespace {{ metrics.namespace }} --values /root/metrics-values.yml"
+      
