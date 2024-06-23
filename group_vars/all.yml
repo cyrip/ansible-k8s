@@ -30,4 +30,4 @@ argocd:
 
 metrics:
   namespace: kube-system
-  enabled: true
+  enabled: false

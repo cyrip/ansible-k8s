@@ -7,7 +7,7 @@
     state: present
   ignore_errors: true # @TODO: remove this, add a management host for cluster management
 
-- name: Generate Argocd ingress from template
+- name: Generate Metrics values from template
   ansible.builtin.template:
     src: root/metrics-values.tpl.yml.j2
     dest: /root/metrics-values.yml
