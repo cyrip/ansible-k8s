@@ -4,6 +4,7 @@
 BOOTSTRAP = bootstrap.yml
 JOIN = join-nodes.yml 
 INSTALL_PACKAGES = install-pkgs.yml
+DEPLOY=deploy-test-apps.yml
 
 # Ansible targets
 .PHONY: all lint bootstrap join
@@ -25,6 +26,9 @@ join-simple:
 
 install-pkgs:
 	ansible-playbook $(INSTALL_PACKAGES) --inventory inventory-mgmt.yml --become --become-method=sudo
+
+deploy:
+	ansible-playbook $(DEPLOY) --inventory inventory-mgmt.yml --become --become-method=sudo
 
 # Target to lint the Ansible playbook
 lint:

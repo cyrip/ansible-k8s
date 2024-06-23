@@ -24,3 +24,9 @@
     name: argocd
     repo_url: https://argoproj.github.io/argo-helm
   when: argocd.enabled | bool
+
+- name: Add bitnami repo
+  kubernetes.core.helm_repository:
+    name: bitnami
+    repo_url: https://charts.bitnami.com/bitnami
+  when: metrics.enabled | bool

@@ -13,7 +13,7 @@ longhorn:
   namespace: longhorn-system
   enabled: true
   ingress: true
-  ingress_host: longhorn.codware.local
+  ingress_host: longhorn.codeware.local
 
 cert_manager:
   enabled: true
@@ -24,6 +24,10 @@ cert_manager:
 
 argocd:
   namespace: argocd
-  enabled: false
+  enabled: true
   ingress: true
   ingress_host: argocd.codeware.local
+
+metrics:
+  namespace: kube-system
+  enabled: true

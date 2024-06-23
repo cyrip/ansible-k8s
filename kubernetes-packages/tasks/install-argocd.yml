@@ -1,19 +1,19 @@
 ---
-- name: Create Longhorn namespace
+- name: Create argocd namespace
   k8s:
     api_version: v1
     kind: Namespace
-    name: argocd
+    name: "{{ argocd.namespace }}"
     state: present
   ignore_errors: true # @TODO: remove this, add a management host for cluster management
 
 - name: Install Argocd
-  ansible.builtin.shell: "helm upgrade --install argocd argocd/argo-cd --namespace argocd"
+  ansible.builtin.shell: "helm upgrade --install argocd argocd/argo-cd --namespace {{ argocd.namespace }}"
 
 - name: Generate Argocd ingress from template
   ansible.builtin.template:
     src: root/argocd-ingress.tpl.yml.j2
-    dest: /root/longhorn-ingress.yml
+    dest: /root/argocd-ingress.yml
     mode: '0600'
 
 - name: Apply Argocd ingress
