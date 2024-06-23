@@ -3,20 +3,20 @@
   k8s:
     api_version: v1
     kind: Namespace
-    name: longhorn-system
+    name: argocd
     state: present
   ignore_errors: true # @TODO: remove this, add a management host for cluster management
 
-- name: Install Longhorn
-  ansible.builtin.shell: "helm upgrade --install longhorn longhorn/longhorn --namespace=longhorn-system"
+- name: Install Argocd
+  ansible.builtin.shell: "helm upgrade --install argocd argocd/argo-cd --namespace argocd"
 
-- name: Generate Longhorn ingress from template
+- name: Generate Argocd ingress from template
   ansible.builtin.template:
-    src: root/longhorn-ingress.tpl.yml.j2
+    src: root/argocd-ingress.tpl.yml.j2
     dest: /root/longhorn-ingress.yml
     mode: '0600'
 
-- name: Apply Longhorn ingress
+- name: Apply Argocd ingress
   kubernetes.core.k8s:
     state: present
-    src: /root/longhorn-ingress.yml
+    src: /root/argocd-ingress.yml    

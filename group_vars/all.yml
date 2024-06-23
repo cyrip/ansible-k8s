@@ -10,8 +10,10 @@ join_workers:
   - kcl2-w3
 
 longhorn:
+  namespace: longhorn-system
   enabled: true
-  namespace: longhorn
+  ingress: true
+  ingress_host: longhorn.codware.local
 
 cert_manager:
   enabled: true
@@ -19,3 +21,9 @@ cert_manager:
   vars:
     sercret_ref: "letsencrypt-prod"
     email_address: "czyrip@gmail.com"
+
+argocd:
+  namespace: argocd
+  enabled: false
+  ingress: true
+  ingress_host: argocd.codeware.local
