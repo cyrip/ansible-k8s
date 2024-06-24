@@ -28,3 +28,15 @@
     state: present
     src: /root/grafana-ingress.yml
   when: grafana.ingress.enabled | bool
+
+- name: Get grafana admin pwd
+  ansible.builtin.shell: "kubectl get secret --namespace monitoring grafana -o jsonpath='{.data.admin-password}' | base64 --decode ; echo"
+  register: grafana_admin_password
+
+- name: Set fact for password
+  ansible.builtin.set_fact:
+    grafana_admin_password: "{{ grafana_admin_password.stdout }}"
+
+- name: Print join command (debugging purpose)
+  ansible.builtin.debug:
+    msg: "Admin passowrd: {{ grafana_admin_password }}"
