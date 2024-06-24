@@ -9,6 +9,10 @@ join_workers:
   - kcl2-w2
   - kcl2-w3
 
+settings:
+  domain_public: codeware.icu
+  domain_local: codeware.local
+
 longhorn:
   namespace: longhorn-system
   enabled: true
