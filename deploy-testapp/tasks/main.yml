@@ -2,6 +2,8 @@
 # tasks file for deploy-testapp
 - name: Include test-app
   ansible.builtin.import_tasks: deploy-test-app.yml
+  when: deploy.test_app.enabled | bool
 
 - name: Include test-app
   ansible.builtin.import_tasks: deploy-argocd-example.yml
+  when: deploy.argocd_example.enabled | bool

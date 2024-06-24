@@ -61,3 +61,9 @@ grafana:
     enabled: true
     host_local: "grafana.{{ settings.domain_local }}"
     host_public: "grafana.{{ settings.domain_public }}"
+
+deploy:
+  test_app:
+    enabled: true
+  argocd_example:
+    enabled: true
