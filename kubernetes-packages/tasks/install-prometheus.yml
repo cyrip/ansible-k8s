@@ -1,0 +1,11 @@
+---
+- name: Create prometheus namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ prometheus.namespace }}"
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Install Prometheus
+  ansible.builtin.shell: "helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --create-namespace --namespace {{ prometheus.namespace }} --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage={{ prometheus.storage.size }}"

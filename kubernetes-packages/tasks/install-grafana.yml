@@ -1,0 +1,30 @@
+---
+- name: Create grafana namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ grafana.namespace }}"
+    state: present
+  ignore_errors: true # @TODO: remove this, add a management host for cluster management
+
+- name: Generate Grafana values from template
+  ansible.builtin.template:
+    src: root/grafana-values.tpl.yml.j2
+    dest: /root/grafana-values.yml
+    mode: '0600'
+    
+- name: Install Grafana
+  ansible.builtin.shell: "helm upgrade --install grafana grafana/grafana --namespace monitoring --create-namespace --values /root/grafana-values.yml"
+
+- name: Generate Grafana ingress from template
+  ansible.builtin.template:
+    src: root/grafana-ingress.tpl.yml.j2
+    dest: /root/grafana-ingress.yml
+    mode: '0600'
+  when: grafana.ingress.enabled | bool 
+
+- name: Apply Grafana ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/grafana-ingress.yml
+  when: grafana.ingress.enabled | bool

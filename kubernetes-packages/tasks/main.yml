@@ -4,9 +4,11 @@
 
 - name: Install Ingress-nginx
   ansible.builtin.import_tasks: install-ingress-nginx.yml
+  when: ingress_nginx.enabled | bool
 
 - name: Install Metallb
   ansible.builtin.import_tasks: install-metallb.yml
+  when: metallb.enabled | bool
 
 - name: Install Longhorn
   ansible.builtin.import_tasks: install-longhorn.yml
@@ -14,6 +16,7 @@
 
 - name: Install Cert-manager
   ansible.builtin.import_tasks: install-cert-manager.yml
+  when: cert_manager.enabled | bool    
 
 - name: Install ArgoCD
   ansible.builtin.import_tasks: install-argocd.yml
@@ -22,3 +25,11 @@
 - name: Install Metrics Server
   ansible.builtin.import_tasks: install-metrics.yml
   when: metrics.enabled | bool
+
+- name: Install Prometheus Server
+  ansible.builtin.import_tasks: install-prometheus.yml
+  when: prometheus.enabled | bool
+
+- name: Install Grafana Server
+  ansible.builtin.import_tasks: install-grafana.yml
+  when: grafana.enabled | bool

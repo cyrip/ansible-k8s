@@ -15,8 +15,10 @@
     src: root/argocd-ingress.tpl.yml.j2
     dest: /root/argocd-ingress.yml
     mode: '0600'
+  when: argocd.ingress.enabled | bool      
 
 - name: Apply Argocd ingress
   kubernetes.core.k8s:
     state: present
-    src: /root/argocd-ingress.yml    
+    src: /root/argocd-ingress.yml
+  when: argocd.ingress.enabled | bool

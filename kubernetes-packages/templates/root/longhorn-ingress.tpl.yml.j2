@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: {{ longhorn.ingress_host }}
+  - host: {{ longhorn.ingress.host_local }}
     http:
       paths:
       - path: /

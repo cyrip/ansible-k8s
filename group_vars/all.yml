@@ -13,14 +13,28 @@ settings:
   domain_public: codeware.icu
   domain_local: codeware.local
 
-longhorn:
-  namespace: longhorn-system
-  enabled: true
-  ingress: true
-  ingress_host: longhorn.codeware.local
+ingress_nginx:
+  namespace: ingress-nginx
+  enabled: false
+
+metallb:
+  namespace: matellb-system
+  enabled: false
 
 cert_manager:
-  enabled: true
+  namespace: cert-manager
+  enabled: false
+
+longhorn:
+  namespace: longhorn-system
+  enabled: false
+  ingress:
+    enabled: true
+    ingress_local: "longhorn.{{ settings.domain_local }}"
+    ingress_public: "longhorn.{{ settings.domain_public }}"
+
+cert_manager:
+  enabled: false
   namespace: cert-manager
   vars:
     sercret_ref: "letsencrypt-prod"
@@ -28,10 +42,26 @@ cert_manager:
 
 argocd:
   namespace: argocd
-  enabled: true
-  ingress: true
-  ingress_host: argocd.codeware.local
+  enabled: false
+  ingress:
+    enabled: true
+    host_local: "argocd.{{ settings.domain_local }}"
+    host_public: "argocd.{{ settings.domain_public }}"
 
 metrics:
   namespace: kube-system
   enabled: false
+
+prometheus:
+  namespace: monitoring
+  enabled: true
+  storage:
+    size: "2Gi"
+
+grafana:
+  namespace: monitoring
+  enabled: true
+  ingress:
+    enabled: true
+    host_local: "grafana.{{ settings.domain_local }}"
+    host_public: "grafana.{{ settings.domain_public }}"

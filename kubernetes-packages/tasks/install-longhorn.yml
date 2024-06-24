@@ -15,8 +15,10 @@
     src: root/longhorn-ingress.tpl.yml.j2
     dest: /root/longhorn-ingress.yml
     mode: '0600'
+  when: longhorn.ingress.enabled | bool
 
 - name: Apply Longhorn ingress
   kubernetes.core.k8s:
     state: present
     src: /root/longhorn-ingress.yml
+  when: longhorn.ingress.enabled | bool
