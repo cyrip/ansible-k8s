@@ -3,3 +3,5 @@
 - name: Include test-app
   ansible.builtin.import_tasks: deploy-test-app.yml
 
+- name: Include test-app
+  ansible.builtin.import_tasks: deploy-argocd-example.yml
