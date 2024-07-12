@@ -15,7 +15,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: {{ argocd.ingress.host_local }}
+  - host: {{ argocd.ingress.host_public }}
     http:
       paths:
       - path: /

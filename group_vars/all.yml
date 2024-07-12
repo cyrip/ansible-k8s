@@ -15,22 +15,22 @@ settings:
 
 ingress_nginx:
   namespace: ingress-nginx
-  enabled: false
+  enabled: true
 
 metallb:
   namespace: matellb-system
-  enabled: false
+  enabled: true
 
 longhorn:
   namespace: longhorn-system
-  enabled: false
+  enabled: true
   ingress:
-    enabled: false
+    enabled: true
     host_local: "longhorn.{{ settings.domain_local }}"
     host_public: "longhorn.{{ settings.domain_public }}"
 
 cert_manager:
-  enabled: false
+  enabled: true
   namespace: cert-manager
   vars:
     sercret_ref: "letsencrypt-prod"
@@ -38,15 +38,15 @@ cert_manager:
 
 argocd:
   namespace: argocd
-  enabled: false
+  enabled: true
   ingress:
-    enabled: false
+    enabled: true
     host_local: "argocd.{{ settings.domain_local }}"
     host_public: "argocd.{{ settings.domain_public }}"
 
 metrics:
   namespace: kube-system
-  enabled: false
+  enabled: true
 
 prometheus:
   namespace: monitoring
@@ -64,6 +64,6 @@ grafana:
 
 deploy:
   test_app:
-    enabled: false
+    enabled: true
   argocd_example:
-    enabled: false
+    enabled: true

@@ -22,3 +22,16 @@
     state: present
     src: /root/argocd-ingress.yml
   when: argocd.ingress.enabled | bool
+
+- name: Generate Argocd ingress from template
+  ansible.builtin.template:
+    src: root/argocd-ingress-external.tpl.yml.j2
+    dest: /root/argocd-ingress-external.yml
+    mode: '0600'
+  when: argocd.ingress.enabled | bool
+
+- name: Apply Argocd ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /root/argocd-ingress-external.yml
+  when: argocd.ingress.enabled | bool
