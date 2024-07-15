@@ -1,12 +1,12 @@
 ---
 - name: Ensure kubernetes master nodes are configured
-  hosts: kcl2-masters
+  hosts: kcl3-masters
   roles:
     - common
     - kubernetes-common
     - kubernetes-master
 - name: Ensure kubernetes worker nodes are configured
-  hosts: kcl2-workers
+  hosts: kcl3-workers
   roles:
     - common
     - kubernetes-common

@@ -7,14 +7,14 @@ kernel_modules:
   - overlay
   - br_netfilter
 host_entries:
-  - { ip: "192.168.0.121", fqdn: "kcl2-m1.codeware.local", shortname: "kcl2-m1" }
-  - { ip: "192.168.0.122", fqdn: "kcl2-m2.codeware.local", shortname: "kcl2-m2" }
-  - { ip: "192.168.0.123", fqdn: "kcl2-m3.codeware.local", shortname: "kcl2-m3" }
-  - { ip: "192.168.0.124", fqdn: "kcl2-w1.codeware.local", shortname: "kcl2-w1" }
-  - { ip: "192.168.0.125", fqdn: "kcl2-w2.codeware.local", shortname: "kcl2-w2" }
+  - { ip: "192.168.0.131", fqdn: "kcl3-m1.codeware.local", shortname: "kcl3-m1" }
+  - { ip: "192.168.0.132", fqdn: "kcl3-m2.codeware.local", shortname: "kcl3-m2" }
+  - { ip: "192.168.0.133", fqdn: "kcl3-m3.codeware.local", shortname: "kcl3-m3" }
+  - { ip: "192.168.0.134", fqdn: "kcl3-w1.codeware.local", shortname: "kcl3-w1" }
+  - { ip: "192.168.0.135", fqdn: "kcl3-w2.codeware.local", shortname: "kcl3-w2" }
 hostname_map:
-  "kcl2-m1": "kcl2-m1.codeware.local"
-  "kcl2-m2": "kcl2-m2.codeware.local"
-  "kcl2-m3": "kcl2-m3.codeware.local"
-  "kcl2-w1": "kcl2-w1.codeware.local"
-  "kcl2-w2": "kcl2-w2.codeware.local"
+  "kcl3-m1": "kcl3-m1.codeware.local"
+  "kcl3-m2": "kcl3-m2.codeware.local"
+  "kcl3-m3": "kcl3-m3.codeware.local"
+  "kcl3-w1": "kcl3-w1.codeware.local"
+  "kcl3-w2": "kcl3-w2.codeware.local"

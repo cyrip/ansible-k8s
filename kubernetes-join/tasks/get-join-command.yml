@@ -30,7 +30,7 @@
   ignore_errors: true
   when:
     - inventory_hostname != control_plane_endpoint
-    - "'kcl2-workers' in group_names"
+    - "'kcl3-workers' in group_names"
     - not kubelet_conf.stat.exists
 
 - name: Define the list of PKI files to be copied
@@ -80,23 +80,23 @@
     mode: '0755'
   when:
     - inventory_hostname != control_plane_endpoint
-    - "'kcl2-masters' in group_names"
-  with_items: "{{ hostvars[groups['kcl2-masters'][0]].pki_files }}"
+    - "'kcl3-masters' in group_names"
+  with_items: "{{ hostvars[groups['kcl3-masters'][0]].pki_files }}"
 
 - name: Write PKI files to new control plane nodes
   copy:
-    content: "{{ hostvars[groups['kcl2-masters'][0]].pki_file_contents[item.dest] }}"
+    content: "{{ hostvars[groups['kcl3-masters'][0]].pki_file_contents[item.dest] }}"
     dest: "{{ item.dest }}"
     mode: '0600'
   when:
     - inventory_hostname != control_plane_endpoint
-    - "'kcl2-masters' in group_names"
-  with_items: "{{ hostvars[groups['kcl2-masters'][0]].pki_files }}"
+    - "'kcl3-masters' in group_names"
+  with_items: "{{ hostvars[groups['kcl3-masters'][0]].pki_files }}"
 
 - name: Run join command on master nodes
   ansible.builtin.shell: "{{ hostvars[control_plane_endpoint].join_command }} --control-plane"
   ignore_errors: yes
   when:
     - inventory_hostname != control_plane_endpoint
-    - "'kcl2-masters' in group_names"
+    - "'kcl3-masters' in group_names"
     - not kubelet_conf.stat.exists      

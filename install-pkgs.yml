@@ -1,6 +1,6 @@
 ---
 - name: Install needed infrastructure
   hosts:
-    - kcl2-mgmts
+    - kcl3-mgmts
   roles:
     - kubernetes-packages
